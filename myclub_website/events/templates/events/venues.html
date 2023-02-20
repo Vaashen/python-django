@@ -1,0 +1,32 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+    <h1>Venues</h1>
+    <br/></br>
+
+    {% for venue in venues_list %}
+
+        <div class="card">
+            <div class="card-header">
+                {{ venue }}
+            </div>
+
+
+            <div class="card-body">
+                <p class= "card-text">
+                    <ul>
+                        <li>{{ venue.address}} </li>
+                        <li>{{ venue.zip_code}} </li>
+                        <li>{{ venue.phone_num}} </li>
+                        <li><a href="{{ venue.web}}">{{ venue.web}}</a> </li>
+                        <li>{{ venue.email_address}} </li>
+                    </ul>
+
+                    <div align='right'>
+                        <a href="{% url 'update-venue' venue.id %}" class="btn btn-secondary btn-sm">Update</a>
+                    </div>   
+                </p>
+            </div>
+        </div>    
+    {% endfor %}
+{% endblock %}
