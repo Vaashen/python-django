@@ -2,8 +2,9 @@ import os
 import sys
 import django
 sys.path.insert(0, os.path.abspath('..'))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'myclub_website.settings'
+os.environ['DJANGO_SETTINGS_MODULES'] = 'myclub_website.settings'
 django.setup()
+
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -13,7 +14,7 @@ django.setup()
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Myclub'
+project = 'myclub'
 copyright = '2023, Vaashen'
 author = 'Vaashen'
 release = '00:00:01'

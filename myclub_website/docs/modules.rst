@@ -1,7 +1,7 @@
-myclub_website
-==============
+events
+======
 
 .. toctree::
    :maxdepth: 4
 
-   myclub_website
+   events
