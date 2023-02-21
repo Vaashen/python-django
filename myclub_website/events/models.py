@@ -2,6 +2,11 @@ from django.db import models
 
 # Create your models here.
 class Venue(models.Model):
+    """This is a class that will be used for the venues, it will have all the fields needed to make a bookig fo ra venue.
+    
+    :return: it will return a string output showing the name of the venue
+    :rtype: str
+    """
     
     name = models.CharField(max_length=120) 
     address = models.CharField(max_length=300)
@@ -15,6 +20,11 @@ class Venue(models.Model):
 
 
 class MyClubUser(models.Model):
+    """This is a class that will store the details for the users that register on the website
+    
+    :return: it will return thier first and last names 
+    :rtype: str
+    """
     first_name = models.CharField(max_length=30) 
     last_name = models.CharField(max_length=30)
     email = models.EmailField()
@@ -24,6 +34,11 @@ class MyClubUser(models.Model):
     
         
 class Event(models.Model):
+    """This is a class that will have the fields to the events that have been booked, including the venues details.
+    
+    :return: it will return the name of the event 
+    :rtype: str
+    """
     
     name = models.CharField('Event Name', max_length=120)
     event_date =models.DateTimeField('Event Date')

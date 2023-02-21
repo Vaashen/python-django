@@ -4,6 +4,9 @@ from .models import Venue, Event
 
 
 class VenueForm(ModelForm):
+    """This is a class that will create a Venue form for my website.
+        The form will ask for: venue name, address, zip code, phone number, web address, and email address.
+    """
     class Meta:
         model = Venue
         fields = ('name', 'address', 'zip_code', 'phone_num', 'web', 'email_address')
@@ -26,6 +29,10 @@ class VenueForm(ModelForm):
         
 
 class EventForm(ModelForm):
+    """This is a class that will create a event form for my website.
+        It will be used to ask the user to input details about the event they wan to book, details such as:
+        name of the event, evet date, maager of the event, attendees of the event etc.
+    """
     class Meta:
         model = Event
         fields = ('name', 'event_date', 'venue', 'manager', 'attendees', 'description')

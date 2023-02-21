@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>events.views &mdash; myclub 00:00:01 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            myclub
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#members">members</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">myclub</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">events.views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for events.views</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">import</span> <span class="nn">calendar</span>
+<span class="kn">from</span> <span class="nn">calendar</span> <span class="kn">import</span> <span class="n">HTMLCalendar</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Event</span><span class="p">,</span> <span class="n">Venue</span>
+<span class="kn">from</span> <span class="nn">.forms</span> <span class="kn">import</span> <span class="n">VenueForm</span><span class="p">,</span> <span class="n">EventForm</span>
+
+<span class="c1"># Create your views here.</span>
+<div class="viewcode-block" id="add_event"><a class="viewcode-back" href="../../events.html#events.views.add_event">[docs]</a><span class="k">def</span> <span class="nf">add_event</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function will allow the user to add an event using the event form.</span>
+<span class="sd">    If the request method is POST, and if the details entered are all valid, save the form and store in the database.</span>
+<span class="sd">    </span>
+<span class="sd">    :param request: will be used to determine if the method is POST or GET</span>
+<span class="sd">    :type request: Any</span>
+<span class="sd">    </span>
+<span class="sd">    :return: render the add_event.html</span>
+<span class="sd">    :rtype: render request</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">submitted</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">EventForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="s1">&#39;/add_event?submitted=True&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">EventForm</span>
+        <span class="k">if</span>  <span class="s1">&#39;submitted&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">:</span>
+            <span class="n">submitted</span> <span class="o">=</span> <span class="kc">True</span>
+            
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;events/add_event.html&#39;</span><span class="p">,</span> 
+                  <span class="p">{</span><span class="s2">&quot;form&quot;</span><span class="p">:</span><span class="n">form</span><span class="p">,</span>
+                   <span class="s1">&#39;submitted&#39;</span><span class="p">:</span> <span class="n">submitted</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="update_venue"><a class="viewcode-back" href="../../events.html#events.views.update_venue">[docs]</a><span class="k">def</span> <span class="nf">update_venue</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function will allow the user to update a venue.</span>
+<span class="sd">    It will fetch the Venue form using the Venues id number.</span>
+<span class="sd">    If the form details are valid, save the changes.</span>
+<span class="sd">    </span>
+<span class="sd">    :param venue_id: the id number for the venue in the database</span>
+<span class="sd">    :type venue_id: int</span>
+<span class="sd">    </span>
+<span class="sd">    :return: redirects you back to the url called list-venues</span>
+<span class="sd">    :rtype: redirect</span>
+<span class="sd">    </span>
+<span class="sd">    :return: loads the update_venue.html file </span>
+<span class="sd">    :rtype: render</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">venue</span><span class="o">=</span> <span class="n">Venue</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">venue_id</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">VenueForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">venue</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;list-venues&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;events/update_venue.html&#39;</span><span class="p">,</span>
+                  <span class="p">{</span><span class="s1">&#39;venue&#39;</span><span class="p">:</span> <span class="n">venue</span><span class="p">,</span>
+                   <span class="s1">&#39;form&#39;</span><span class="p">:</span><span class="n">form</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="list_venues"><a class="viewcode-back" href="../../events.html#events.views.list_venues">[docs]</a><span class="k">def</span> <span class="nf">list_venues</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function returns all the venues in a readable manner on the website.</span>
+<span class="sd">    </span>
+<span class="sd">    :return: loads the venues.html file</span>
+<span class="sd">    :rtype: render</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">venues_list</span> <span class="o">=</span> <span class="n">Venue</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;events/venues.html&#39;</span><span class="p">,</span>
+                  <span class="p">{</span><span class="s1">&#39;venues_list&#39;</span><span class="p">:</span> <span class="n">venues_list</span><span class="p">})</span> </div>
+
+
+<div class="viewcode-block" id="add_venue"><a class="viewcode-back" href="../../events.html#events.views.add_venue">[docs]</a><span class="k">def</span> <span class="nf">add_venue</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function will allow the user to add a new venue.</span>
+<span class="sd">    If the request method is post, it will call the Venue form and allow the user to fill in the details,</span>
+<span class="sd">    if all the details are valid, save the form and post it to the database</span>
+<span class="sd">    </span>
+<span class="sd">    :return: will redirect the user to thier submiited form</span>
+<span class="sd">    :rtype: HttpResponseRedirect</span>
+<span class="sd">    </span>
+<span class="sd">    :return: will load the add_venue.html file</span>
+<span class="sd">    :rtype: render</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">submitted</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">VenueForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="s1">&#39;/add_venue?submitted=True&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">VenueForm</span>
+        <span class="k">if</span>  <span class="s1">&#39;submitted&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">:</span>
+            <span class="n">submitted</span> <span class="o">=</span> <span class="kc">True</span>
+            
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;events/add_venue.html&#39;</span><span class="p">,</span> 
+                  <span class="p">{</span><span class="s2">&quot;form&quot;</span><span class="p">:</span><span class="n">form</span><span class="p">,</span>
+                   <span class="s1">&#39;submitted&#39;</span><span class="p">:</span> <span class="n">submitted</span><span class="p">})</span></div>
+    
+<div class="viewcode-block" id="all_events"><a class="viewcode-back" href="../../events.html#events.views.all_events">[docs]</a><span class="k">def</span> <span class="nf">all_events</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function will display all the events that have been submiited in a readable manner on the website.</span>
+<span class="sd">    </span>
+<span class="sd">    :return: it will load the event_list.html file and will get all the events in the database and display it here</span>
+<span class="sd">    :rtype: render</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">event_list</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;events/event_list.html&#39;</span><span class="p">,</span>
+                  <span class="p">{</span><span class="s1">&#39;event_list&#39;</span><span class="p">:</span> <span class="n">event_list</span><span class="p">})</span>    </div>
+    
+    
+    
+<div class="viewcode-block" id="home"><a class="viewcode-back" href="../../events.html#events.views.home">[docs]</a><span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%B&quot;</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function will display a calendar on the home page of the website, it will autmatically update each month for every year.</span>
+<span class="sd">    </span>
+<span class="sd">    :param year: this will use the datetime module to get the current year</span>
+<span class="sd">    :type year: int</span>
+<span class="sd">    </span>
+<span class="sd">    :param month: this will also use the datetime module to get the curret month</span>
+<span class="sd">    :type month: str</span>
+<span class="sd">    </span>
+<span class="sd">    :return: it will return a calendar showing the current month and the days with the current year on the home page</span>
+<span class="sd">    :rtypeL: render</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">month</span> <span class="o">=</span> <span class="n">month</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
+    
+    <span class="c1"># convert month from name to number</span>
+    <span class="n">month_number</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">calendar</span><span class="o">.</span><span class="n">month_name</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">month</span><span class="p">)</span>
+    <span class="n">month_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">month_number</span><span class="p">)</span>
+    
+    <span class="c1"># create a calendar</span>
+    <span class="n">cal</span> <span class="o">=</span> <span class="n">HTMLCalendar</span><span class="p">()</span><span class="o">.</span><span class="n">formatmonth</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month_number</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;events/home.html&#39;</span><span class="p">,</span> 
+                  <span class="p">{</span>
+                      <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">year</span><span class="p">,</span>
+                      <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="n">month</span><span class="p">,</span>
+                      <span class="s2">&quot;cal&quot;</span><span class="p">:</span> <span class="n">cal</span>
+                  <span class="p">})</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Vaashen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
